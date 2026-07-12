@@ -1,0 +1,98 @@
+services:
+  traefik:
+    image: traefik:v3.7
+    command:
+      - --configFile=/etc/traefik/traefik.yml
+    ports:
+      -  "80:80"
+      -  "443:443"
+    volumes:
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./traefik/dynamic:/etc/traefik/dynamic:ro
+      - traefik-certs:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - public
+      - internal
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-tgscheduler}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      POSTGRES_DB: ${POSTGRES_DB:-tgscheduler}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-tgscheduler}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - internal
+    restart: unless-stopped
+
+  valkey:
+    image: valkey/valkey:9-alpine
+    command: valkey-server --save 60 1 --loglevel warning
+    volumes:
+      - valkey-data:/data
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - internal
+    restart: unless-stopped
+
+  api:
+    build:
+      context: ./backend
+      target: runtime
+    command: ["python", "-m", "app.main_api"]
+    environment:
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173}
+      API_RELOAD: ${API_RELOAD:-false}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    networks:
+      - internal
+      - public
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.api.rule=PathPrefix(`/api`) || Path(`/health`)
+      - traefik.http.routers.api.entrypoints=web
+      - traefik.http.routers.api.priority=100
+      - traefik.http.services.api.loadbalancer.server.port=8000
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+    networks:
+      - internal
+      - public
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.frontend.rule=PathPrefix(`/`)
+      - traefik.http.routers.frontend.entrypoints=web
+      - traefik.http.routers.frontend.priority=1
+      - traefik.http.services.frontend.loadbalancer.server.port=80
+    restart: unless-stopped
+
+networks:
+  internal:
+    driver: bridge
+  public:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  valkey-data:
+  traefik-certs:

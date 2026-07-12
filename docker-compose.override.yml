@@ -1,0 +1,17 @@
+services:
+  api:
+    volumes:
+      - ./backend/app:/app/app:ro
+    environment:
+      CORS_ORIGINS: http://localhost:5173,http://localhost
+      API_RELOAD: "true"
+    ports:
+      - "8000:8000"
+
+  frontend:
+    ports:
+      - "3000:80"
+
+  traefik:
+    ports:
+      - "8080:8080"

@@ -1,0 +1,9 @@
+http:
+  middlewares:
+    compress:
+      compress: {}
+    security-headers:
+      headers:
+        frameDeny: false
+        contentTypeNosniff: true
+        browserXssFilter: true
