@@ -19,5 +19,5 @@ class TimestampMixin:
     )
 
 
-def new_uuid() -> UUID:
+def new_uuid() -> uuid.UUID:
     return uuid.uuid4()

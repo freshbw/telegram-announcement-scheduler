@@ -9,7 +9,7 @@ async_session_factory = async_sessionmaker(engine, class_=AsyncSession, expire_o
 
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
-    async with async_sessionmaker() as session:
+    async with async_session_factory() as session:
         try:
             yield session
         except Exception:

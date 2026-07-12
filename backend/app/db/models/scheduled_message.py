@@ -80,5 +80,5 @@ class ScheduledMessage(Base, TimestampMixin):
         UUID(as_uuid=True), ForeignKey("admin_users.id"), nullable=False
     )
 
-    channels = relationship("Channel")
+    channel = relationship("Channel")
     created_by = relationship("AdminUser")
