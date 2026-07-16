@@ -11,7 +11,6 @@ from fastapi import HTTPException, Request, Response, status
 from redis.asyncio import Redis
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from starlette.status import HTTP_403_FORBIDDEN
 
 from app.core.config import settings
 from app.db.models.admin_user import AdminUser
@@ -163,6 +162,6 @@ def validate_csrf(request: Request, session_data: dict[str, Any]) -> None:
     if not header_token or not cookie_token:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="CSRF token missing")
     if not hmac.compare_digest(header_token, cookie_token):
-        raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail="CSRF token mismatch")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="CSRF token mismatch")
     if not hmac.compare_digest(header_token, session_token):
-        raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail="CSRF session mismatch")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="CSRF session mismatch")
