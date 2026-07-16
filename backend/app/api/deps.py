@@ -33,9 +33,9 @@ class CurrentAdmin:
 
 
 async def get_current_admin(
-        request: Request,
-        session: AsyncSession = Depends(get_db),
-        session_manager: SessionManager = Depends(get_session_manager),
+    request: Request,
+    session: AsyncSession = Depends(get_db),
+    session_manager: SessionManager = Depends(get_session_manager),
 ) -> CurrentAdmin:
     sid = get_session_id(request)
     if not sid:

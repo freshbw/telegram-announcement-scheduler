@@ -1,8 +1,7 @@
 import logging
 import uuid
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 
-from fastapi import HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,9 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def bootstrap_admins_sync(connection: Connection, telegram_ids: list[int]) -> int:
-    count = connection.execute(
-        select(func.count()).select_from(AdminUser.__table__)
-    ).scalar_one()
+    count = connection.execute(select(func.count()).select_from(AdminUser.__table__)).scalar_one()
     if count > 0:
         return 0
     if not telegram_ids:

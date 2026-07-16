@@ -1,16 +1,17 @@
 """
 Main entry point for the FastAPI application.
 """
+
 import subprocess
 import sys
 from contextlib import asynccontextmanager
 
-from redis.asyncio import Redis
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from redis.asyncio import Redis
 
-from app.core.config import settings
 from app.api import auth
+from app.core.config import settings
 from app.core.logging import setup_logging
 from app.db.session import async_session_factory
 from app.services.admin_service import bootstrap_admins
@@ -51,6 +52,7 @@ app.include_router(auth.router, prefix="/api")
 async def health():
     return {"status": "ok"}
 
+
 def main():
     import uvicorn
 
@@ -60,6 +62,7 @@ def main():
         port=8000,
         reload=settings.api_reload,
     )
+
 
 if __name__ == "__main__":
     main()

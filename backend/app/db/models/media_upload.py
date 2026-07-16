@@ -1,14 +1,11 @@
-import enum
 import uuid
 from datetime import datetime
 
-from sqlalchemy import BigInteger, DateTime, Enum, ForeignKey, String, Text
+from sqlalchemy import DateTime, Enum, ForeignKey, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-
 from app.db.base import Base, new_uuid
-
 from app.db.models.scheduled_message import MediaType
 
 

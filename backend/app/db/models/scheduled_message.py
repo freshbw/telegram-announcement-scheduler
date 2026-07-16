@@ -1,25 +1,15 @@
-import enum
 import uuid
 from datetime import datetime
+from enum import StrEnum
 
-from sqlalchemy import (
-    BigInteger,
-    CheckConstraint,
-    DateTime,
-    Enum,
-    ForeignKey,
-    Index,
-    Integer,
-    String,
-    Text
-)
+from sqlalchemy import CheckConstraint, DateTime, Enum, ForeignKey, Index, Integer, String, Text
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base, TimestampMixin, new_uuid
 
 
-class ScheduleStatus(str, enum.Enum):
+class ScheduleStatus(StrEnum):
     draft = "draft"
     active = "active"
     paused = "paused"
@@ -28,12 +18,12 @@ class ScheduleStatus(str, enum.Enum):
     archived = "archived"
 
 
-class ScheduleMode(str, enum.Enum):
+class ScheduleMode(StrEnum):
     interval = "interval"
     daily = "daily"
 
 
-class MediaType(str, enum.Enum):
+class MediaType(StrEnum):
     photo = "photo"
     video = "video"
     document = "document"

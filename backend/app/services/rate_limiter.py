@@ -17,12 +17,12 @@ class RateLimiter:
         count = results[0]
         return count <= limit
 
-    async def enforce(self, key:str, limit: int, window_seconds: int = 60) -> None:
+    async def enforce(self, key: str, limit: int, window_seconds: int = 60) -> None:
         allowed = await self.check(key, limit, window_seconds)
         if not allowed:
             from fastapi import HTTPException, status
 
             raise HTTPException(
                 status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                detail=f"Rate limit exceeded",
+                detail="Rate limit exceeded",
             )

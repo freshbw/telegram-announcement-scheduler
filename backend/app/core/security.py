@@ -11,10 +11,10 @@ from fastapi import HTTPException, Request, Response, status
 from redis.asyncio import Redis
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from starlette.status import HTTP_403_FORBIDDEN
 
 from app.core.config import settings
 from app.db.models.admin_user import AdminUser
-from starlette.status import HTTP_403_FORBIDDEN
 
 SESSION_COOKIE = "session"
 CSRF_COOKIE = "csrf_token"
@@ -23,6 +23,7 @@ CSRF_COOKIE = "csrf_token"
 def _build_data_check_string(data: dict[str, str]) -> str:
     pairs = sorted((k, v) for k, v in data.items() if k != "hash")
     return "\n".join(f"{k}={v}" for k, v in pairs)
+
 
 def validate_telegram_init_data(init_data: str, bot_token: str) -> dict[str, Any]:
     parsed = dict[str, str](parse_qsl(init_data, keep_blank_values=True))
@@ -46,6 +47,7 @@ def validate_telegram_init_data(init_data: str, bot_token: str) -> dict[str, Any
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Missing user")
     user = json.loads(user_raw)
     return user
+
 
 async def get_admin_by_telegram_id(session: AsyncSession, telegram_user_id: int) -> AdminUser:
     result = await session.execute(

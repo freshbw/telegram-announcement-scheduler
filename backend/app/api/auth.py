@@ -18,12 +18,12 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.post("/telegram")
 async def login_telegram(
-        body: TelegramAuthRequest,
-        request: Request,
-        response: Response,
-        session: AsyncSession = Depends(get_db),
-        valkey=Depends(get_valkey),
-        session_manager=Depends(get_session_manager),
+    body: TelegramAuthRequest,
+    request: Request,
+    response: Response,
+    session: AsyncSession = Depends(get_db),
+    valkey=Depends(get_valkey),
+    session_manager=Depends(get_session_manager),
 ):
     ip = request.client.host if request.client else "unknown"
     rate_limiter = RateLimiter(valkey)
